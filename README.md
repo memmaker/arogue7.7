@@ -8,7 +8,9 @@ Restoration Project: https://github.com/RoguelikeRestorationProject/arogue7.7/tr
 
 - `port:` builds on macOS/arm64 and WebAssembly: prototypes, 64-bit fixes
   (daemon arguments, 4-byte longs in saves), curses shim (`port/`) with an X11
-  frontend, NetHack tiles (`port/mktiles.py`).
+  frontend, NetHack tiles (`port/mktiles.py`), DawnLike as a second
+  set (`port/mkdawn.py`; DragonDePlatino, palette DawnBringer, CC BY 4.0;
+  web: *Tiles* button, desktop: `TILESET=dawn ./play.sh`).
 - `RVIP:` auto-explore (`x`), `<`/`>` walk to known stairs, Enter command
   menu, inventory with a cursor, sound events (`rvip.c` + small hooks).
 - `web:` browser build (`web/build.sh`), played at https://ruzzoli.de/roguelikes/arogue77/
