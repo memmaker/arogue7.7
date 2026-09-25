@@ -294,6 +294,7 @@ wear()
 	     * they cannot be used with armor but can be used with cloaks
 	     */
 	    when MM_BRACERS:
+		be_sound("wield");
 		msg("wearing %s",inv_name(obj,TRUE));
 		cur_misc[WEAR_BRACERS] = obj;
 
@@ -311,6 +312,7 @@ wear()
 	     * throws with a max of +3 on saves
 	     */
 	    case MM_PROTECT:
+		be_sound("wield");
 		msg("wearing %s",inv_name(obj,TRUE));
 		cur_misc[WEAR_CLOAK] = obj;
 	    /*

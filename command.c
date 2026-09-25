@@ -117,10 +117,21 @@ command()
 		    ch = runch;
 		}
 		else if (count) ch = countch;
+		else if (explore_mode && (ch = explore_step()) != 0)
+		    ;
 		else {
-		    ch = readchar();
+		    inv_pick = NULL;
+		    if (inv_again && !(inv_again = 0) && !monster_in_view())
+			ch = 'i';	/* reopen the inventory (RVIP 3c) */
+		    else {
+			wc_cmd_prompt = 1;	/* web autosave may run now */
+			ch = readchar();
+			wc_cmd_prompt = 0;
+		    }
 		    if (mpos != 0 && !running)	/* Erase message if its there */
 			msg("");
+		    if (ch == '\r' || ch == '\n') ch = cmd_menu();
+		    if (ch == 'i') ch = inv_menu();
 		}
 
 		/*
@@ -193,7 +204,7 @@ command()
 		if (count && !running)
 		    count--;
 		switch (ch) {
-		    case '!' : shell();
+		    case '!' : after = FALSE; msg("There is no shell here.");
 		    when 'h' : do_move(0, -1);
 		    when 'j' : do_move(1, 0);
 		    when 'k' : do_move(-1, 0);
@@ -275,8 +286,11 @@ command()
 		    when CTRL('N') : nameit();
 		    when '=' : after = FALSE; display();
 		    when 'm' : nameitem(NULL, TRUE);
-		    when '>' : after = FALSE; d_level();
-		    when '<' : after = FALSE; u_level();
+		    when '>' : after = FALSE;
+			       if (explore_stairs('>')) d_level();
+		    when '<' : after = FALSE;
+			       if (explore_stairs('<')) u_level();
+		    when 'x' : after = FALSE; explore_mode = 'x';
 		    when '?' : after = FALSE; help();
 		    when '/' : after = FALSE; identify(NULL);
 		    when C_USE : use_mm(-1);
@@ -912,6 +926,7 @@ d_level()
 
     /* If we are on a trading post, go to a trading post level. */
     if (position == POST) {
+	be_sound("stairs_down");
 	new_level(POSTLEV);
 	return;
     }
@@ -946,6 +961,7 @@ d_level()
     }
 
     level++;
+    be_sound("stairs_down");
     new_level(NORMLEV);
     if (no_phase) unphase();
 }
@@ -999,6 +1015,7 @@ u_level()
     t_free_list(tlist);	/* Monsters that fell below are long gone! */
 
     if (levtype != POSTLEV) level--;
+    be_sound("stairs_up");
     if (level > 0) new_level(NORMLEV);
     else {
 	level = -1;	/* Indicate that we are new to the outside */

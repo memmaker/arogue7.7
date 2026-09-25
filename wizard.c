@@ -541,6 +541,8 @@ teleport()
     coord old;
     bool got_position = FALSE;
 
+    be_sound("teleport");
+
     /* Disrupt whatever the hero was doing */
     dsrpt_player();
 

@@ -70,6 +70,7 @@ buy_it()
 	    trans_line();		/* show remaining deals */
 	    curprice = -1;		/* reset stuff */
 	    curpurch[0] = 0;
+	    be_sound("store5");
 	    whatis (item);		/* identify it after purchase */
 	    (OBJPTR(item))->o_flags &= ~ISPOST; /* turn off ISPOST */
 	    msg("%s", inv_name(OBJPTR(item), TRUE));

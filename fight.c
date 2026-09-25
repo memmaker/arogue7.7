@@ -738,6 +738,7 @@ bool back_stab, thrown, short_msg;
 
     /* If we can't see either the attacker or defender, don't say anything */
     if (!see_att && !see_def) return;
+    be_sound(er == NULL ? "hit" : ee == NULL ? "mon_hit" : "");
 
     /* What do we call the attacker? */
     strcpy(att_name, see_att ? prname(er, TRUE) : "Something");
@@ -803,6 +804,7 @@ bool thrown, short_msg;
 
     /* If we can't see either the attacker or defender, don't say anything */
     if (!see_att && !see_def) return;
+    if (er == NULL) be_sound("miss");
 
     /* What do we call the attacker? */
     strcpy(att_name, see_att ? prname(er, TRUE) : "Something");
@@ -1039,6 +1041,7 @@ bool pr, points, treasure;
 
     if (pr)
     {
+	be_sound("kill");
 	addmsg(terse ? "Defeated " : "You have defeated ");
 	if (on(player, ISBLIND))
 	    msg("it.");

@@ -38,6 +38,7 @@ eat()
     }
 
     /* We have waited our time, let's eat the food */
+    be_sound("eat");
     item = player.t_using;
     player.t_using = NULL;
     player.t_action = A_NIL;
