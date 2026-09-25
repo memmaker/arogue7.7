@@ -18,6 +18,15 @@
  */
 
 #define reg register
+
+/* sound events (port/curses.h); silent in the plain ncurses build */
+#ifndef XR_SHIM
+#define be_sound(event) ((void) 0)
+#endif
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#define daemon xr_daemon   /* libc has a daemon() too */
 #undef lines /* AIX's term.h defines this, causing a conflict */
 #ifdef BSD
 #undef tolower(c)
@@ -1125,7 +1134,7 @@ struct trap		*trap_at();
 
 /* char	*malloc(), *getenv(), *tr_name(), *new(), *sprintf(), */
 char	*getenv(), *tr_name(), *new(),
-	*vowelstr(), *inv_name(), *strcpy(), *strcat();
+	*vowelstr(), *inv_name();
 char	*num(), *ring_num(), *misc_num(), *blesscurse(), *p_kind(),
 	*typ_name(), *prname(), *monster_name(), *weap_name(), *misc_name();
 coord	*rndmove(), *can_shoot(), *fallpos(), *doorway(), get_coordinates();
@@ -1144,7 +1153,7 @@ int	nohaste(), spell_recovery(),
 bool	blue_light(), can_blink(), creat_mons(), add_pack(),
 	straight_shot(), maze_view(), lit_room(), getdelta(), save_file(),
 	save_game(), m_use_it(), m_use_pack(), get_dir(), need_dir();
-long	lseek(), check_level();
+long	check_level();
 void	genmonsters(), 
 	add_intelligence(), add_strength(), add_wisdom(), add_dexterity(),
 	add_constitution(), add_charisma(), res_intelligence(), res_strength(int),
@@ -1295,3 +1304,21 @@ extern struct delayed_action f_list[MAXFUSES];
 extern int demoncnt, fusecnt, between, chance;
 #define CCHAR(x) ( (char) (x & A_CHARTEXT) )
 extern char *md_gethostname(), *md_getusername(), *md_gethomedir(), *md_getroguedir(), *md_crypt();
+
+/* Prototypes the 64-bit/wasm build needs (RVIP port): variadic functions and
+ * functions returning pointers or longs must be declared before use. */
+int msg(char *fmt, ...);
+int addmsg(char *fmt, ...);
+extern int explore_mode;
+int explore_step(), explore_stairs(), monster_in_view(), cmd_menu(), inv_menu(), menu();
+void explore_reset();
+extern struct linked_list *inv_pick;
+extern int inv_again;
+int xr_daemon(int (*)(), void *, int);
+int fuse(int (*)(), void *, int, int);
+struct delayed_action *find_slot();
+char *md_getpass();
+unsigned long md_ntohl(), md_htonl();
+long md_memused();
+/* void functions called before their definition (WebAssembly checks return types) */
+void do_terrain(), init_terrain(), lake_check(), md_flushinp(), md_init(), picky_inven();

@@ -531,7 +531,7 @@ int
 rs_read_long(int inf, long *i)
 {
     unsigned char bytes[4];
-    long input;
+    int input;         /* 4 bytes in the file; long is 8 on arm64 */
     unsigned char *buf = (unsigned char *) &input;
     
     if (read_error || format_error)
@@ -548,7 +548,7 @@ rs_read_long(int inf, long *i)
         buf = bytes;
     }
     
-    *i = *((long *) buf);
+    *i = *((int *) buf);
 
     return(READSTAT);
 }
@@ -623,7 +623,7 @@ int
 rs_read_ulong(int inf, unsigned long *i)
 {
     unsigned char bytes[4];
-    unsigned long input;
+    unsigned int input;         /* 4 bytes in the file; long is 8 on arm64 */
     unsigned char *buf = (unsigned char *) &input;
     
     if (read_error || format_error)
@@ -640,7 +640,7 @@ rs_read_ulong(int inf, unsigned long *i)
         buf = bytes;
     }
     
-    *i = *((unsigned long *) buf);
+    *i = *((unsigned int *) buf);
 
     return(READSTAT);
 }
@@ -1624,6 +1624,7 @@ rs_read_daemons(int inf, struct delayed_action *d_list, int count)
 	}
         else if (d_list[i].d_func == changeclass)
         {
+	    d_list[i].d_.varg = NULL;
 	    rs_read_int(inf, &d_list[i].d_.arg);
         }
         else if (d_list[i].d_func == cloak_charge)
@@ -1634,8 +1635,10 @@ rs_read_daemons(int inf, struct delayed_action *d_list, int count)
 	    if (d_list[i].d_.varg == NULL)
 		d_list[i].d_type = 0;
         }
-        else
+        else {
+	    d_list[i].d_.varg = NULL;
 	    rs_read_int(inf, &d_list[i].d_.arg);
+	}
 
         rs_read_int(inf, &d_list[i].d_time);
 

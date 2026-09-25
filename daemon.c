@@ -96,7 +96,8 @@ reg int (*func)();
  *	Start a daemon, takes a function.
  */
 daemon(func, arg, type)
-reg int arg, type, (*func)();
+reg int type, (*func)();
+void *arg;		/* RVIP: pointers are 64-bit; ints pass through */
 {
 	reg struct delayed_action *dev;
 
@@ -104,7 +105,7 @@ reg int arg, type, (*func)();
 	if (dev != NULL) {
 		dev->d_type = type;
 		dev->d_func = func;
-		dev->d_.arg = arg;
+		dev->d_.varg = arg;
 		dev->d_time = DAEMON;
 		demoncnt += 1;			/* update count */
 	}
@@ -130,7 +131,7 @@ reg int (*func)();
 	 * Take it out of the list
 	 */
 	dev->d_type = EMPTY;
-	dev->d_.arg  = 0;
+	dev->d_.varg = NULL;
 	dev->d_func = NULL;
 	dev->d_time = 0;
 	demoncnt -= 1;			/* update count */
@@ -155,7 +156,7 @@ reg int flag;
 	 * Executing each one, giving it the proper arguments
 	 */
 		if (dev->d_type == flag && dev->d_time == DAEMON)
-			(*dev->d_func)(dev->d_.arg);
+			(*dev->d_func)(dev->d_.varg);
 }
 
 
@@ -164,7 +165,8 @@ reg int flag;
  *	Start a fuse to go off in a certain number of turns
  */
 fuse(func, arg, time, type)
-reg int (*func)(), arg, time, type;
+reg int (*func)(), time, type;
+void *arg;
 {
 	reg struct delayed_action *wire;
 
@@ -172,7 +174,7 @@ reg int (*func)(), arg, time, type;
 	if (wire != NULL) {
 		wire->d_type = type;
 		wire->d_func = func;
-		wire->d_.arg = arg;
+		wire->d_.varg = arg;
 		wire->d_time = time;
 		fusecnt += 1;			/* update count */
 	}
@@ -207,7 +209,7 @@ reg int (*func)();
 		return;
 	wire->d_type = EMPTY;
 	wire->d_func = NULL;
-	wire->d_.arg = 0;
+	wire->d_.varg = NULL;
 	wire->d_time = 0;
 	fusecnt -= 1;
 }
@@ -234,7 +236,7 @@ reg int flag;
 	      --wire->d_time == 0) {
 		wire->d_type = EMPTY;
 		if (wire->d_func != NULL)
-		    (*wire->d_func)(wire->d_.arg);
+		    (*wire->d_func)(wire->d_.varg);
 		fusecnt -= 1;
 	    }
 	}
@@ -248,5 +250,5 @@ reg int flag;
 activity()
 {
 	msg("Daemons = %d : Fuses = %d : Memory Items = %d : Memory Used = %d",
-	    demoncnt,fusecnt,total,md_memused(0));
+	    demoncnt,fusecnt,total,md_memused());
 }
