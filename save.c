@@ -99,7 +99,10 @@ gotfile:
 	unlink(file_name);
 	return(FALSE);
     }
-    else return(TRUE);
+#ifdef __EMSCRIPTEN__
+    wc_saved = TRUE;		/* keep the file (be_web.c) */
+#endif
+    return(TRUE);
 }
 
 /*
@@ -205,6 +208,7 @@ char **envp;
     msgw = newwin(4, cols, 0, 0);
 
     keypad(cw,1);
+    wc_mapwin = cw;
     keypad(msgw,1);
 
     if (rs_restore_file(inf) != 0)
@@ -225,10 +229,12 @@ char **envp;
     /*
      * defeat multiple restarting from the same place
      */
+#ifndef __EMSCRIPTEN__		/* web: kept as the autosave, removed at game end */
     if (!wizard && md_unlink_open_file(file, inf) < 0) {
 	printf("Cannot unlink file\n");
 	return FALSE;
     }
+#endif
 
     environ = envp;
     strcpy(file_name, file);
