@@ -21,6 +21,8 @@
 #include <ctype.h>
 #include "rogue.h"
 
+int auto_more = 1;	/* RVIP: --More-- does not wait; the Messages pane keeps the history */
+
 /*
  * msg:
  *	Display a message at the top of the screen.
@@ -90,7 +92,7 @@ endmsg()
 	    waddstr(msgw, morestr);
 	    draw(cw);
 	    draw(msgw);
-	    wait_for(' ');
+	    if (!auto_more) wait_for(' ');
 	    overwrite(cw,msgw);
 	    wmove(msgw, 0, 0);
 	    touchwin(cw);
