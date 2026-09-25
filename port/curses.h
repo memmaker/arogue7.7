@@ -116,6 +116,7 @@ int wstandend(WINDOW *);
 #define resetty() OK
 
 int wgetstr(WINDOW *, char *);
+int wgetnstr(WINDOW *, char *, int);
 #define getstr(s) wgetstr(stdscr, s)
 /* The score list is printf()ed after endwin(): show it in the window and
  * wait for a key before the program (and its window) goes away. */

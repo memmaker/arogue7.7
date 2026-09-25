@@ -440,7 +440,9 @@ char killchar(void) { return 21; }  /* ^U */
 int wstandout(WINDOW *w) { attr = A_STANDOUT; return OK; }
 int wstandend(WINDOW *w) { attr = 0; return OK; }
 
-int wgetstr(WINDOW *w, char *s)
+int wgetstr(WINDOW *w, char *s) { return wgetnstr(w, s, 80); }
+
+int wgetnstr(WINDOW *w, char *s, int max)
 {
     int n = 0, c;
     for (;;) {
@@ -448,7 +450,7 @@ int wgetstr(WINDOW *w, char *s)
         if (c == '\r' || c == '\n' || c == 27) break;
         if ((c == '\b' || c == 127) && n) {
             n--; w->curx--; waddch(w, ' '); w->curx--;
-        } else if (c >= ' ' && c < 127 && n < 79) {
+        } else if (c >= ' ' && c < 127 && n < max - 1) {
             s[n++] = c; waddch(w, c);
         }
     }
