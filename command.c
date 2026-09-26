@@ -614,6 +614,7 @@ int sig;
 	clear();
 	move(lines-1, 0);
 	draw(stdscr);
+	be_run_end("quit", NULL, pstats.s_exp + (long) purse);
 	score(pstats.s_exp + (long) purse, CHICKEN, 0);
 #ifdef PC7300
 	endhardwin();

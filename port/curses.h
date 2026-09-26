@@ -147,6 +147,7 @@ extern WINDOW *wc_mapwin;  /* the game's map window (cw) */
 extern int wc_cmd_prompt;  /* waiting for a command key */
 extern int wc_saved;       /* the player saved (S): keep the save file */
 void be_sound(const char *);    /* game event, Dubtrain sound name (web plays it) */
+void be_run_end(const char *ev, const char *killer, long score); /* run-report beacon */
 #define XR_SHIM 1
 /* termcap leftovers in mdport.c: no raw terminal output here */
 #define CE 0
