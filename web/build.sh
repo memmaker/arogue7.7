@@ -18,10 +18,12 @@ emcc -O2 -fcommon -std=gnu89 -w -Wno-error=return-mismatch -Wno-error=implicit-f
 	-sEXPORTED_RUNTIME_METHODS=FS,IDBFS,ENV,HEAPU8,addRunDependency,removeRunDependency \
 	-sEMULATE_FUNCTION_POINTER_CASTS \
 	-sFORCE_FILESYSTEM -lidbfs.js -sENVIRONMENT=web
-cp web/index.html web/arogue77.js port/tiles.png port/tiles-dawn.png "$OUT/"
+cp web/index.html web/arogue77.js port/tiles.png port/tiles-dawn.png port/tiles-dawn-1.png "$OUT/"
 # sound effects (message text -> Dubtrain samples) and the town music
 mkdir -p "$OUT/sound" "$OUT/music"
 python3 web/sounds.py "$OUT/sound"
 cp ~/Projects/heavenAndHell/files/mods/heavenandhell/music/new_town.ogg "$OUT/music/"
 python3 web/make-help.py > "$OUT/help.html"
 ls -la "$OUT"
+# text fonts: the index page's fonts/ (served at ../fonts/ next to the games)
+(cd ~/Games/roguelikes-index/fonts && ls *.woff | sed 's/\.woff$//') | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().split()))' > "$OUT/fonts.json"

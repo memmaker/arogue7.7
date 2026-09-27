@@ -277,7 +277,7 @@ int be_getkey(int wait)
 {
     XEvent ev;
     for (;;) {
-        if (!wait && !XPending(dpy)) return -1;
+        if (wait <= 0 && !XPending(dpy)) return -1;
         XNextEvent(dpy, &ev);
         if (ev.type == Expose) be_flush();
         else if (ev.type == KeyPress) {
@@ -291,6 +291,8 @@ int be_getkey(int wait)
 void be_sound(const char *s) { }
 
 void be_end(void) { if (dpy) XCloseDisplay(dpy); dpy = NULL; }
-void be_invfg(int y, const char *css) { }
+void be_invfg(int y, const char *css, int tile) { }
+int be_icons(void) { return 0; }
+void be_rowfg(int p, int y, const char *css) { }
 
 void be_prompt(const char *s) { }   /* web only: the prompt line over the map */

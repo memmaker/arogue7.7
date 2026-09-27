@@ -26,6 +26,7 @@ WINDOW *newwin(int rows, int cols, int by, int bx)
     w->c = malloc(sizeof(chtype) * rows * cols);
     w->first = malloc(sizeof(short) * rows);
     w->last = malloc(sizeof(short) * rows);
+    w->fg = calloc(rows, sizeof *w->fg);
     werase(w);
     w->clear = 0;
     return w;
@@ -34,7 +35,7 @@ WINDOW *newwin(int rows, int cols, int by, int bx)
 int delwin(WINDOW *w)
 {
     if (!w) return ERR;
-    free(w->c); free(w->first); free(w->last); free(w);
+    free(w->c); free(w->first); free(w->last); free(w->fg); free(w);
     return OK;
 }
 
@@ -177,9 +178,12 @@ int werase(WINDOW *w)
 {
     int i;
     for (i = 0; i < w->maxy * w->maxx; i++) w->c[i] = ' ';
+    memset(w->fg, 0, sizeof *w->fg * w->maxy);
     w->cury = w->curx = 0;
     return touchwin(w);
 }
+
+int wc_rowfg(WINDOW *w, int y, const char *css) { if (y < 0 || y >= w->maxy) return ERR; w->fg[y] = css; return OK; }
 
 int wclear(WINDOW *w) { werase(w); w->clear = 1; return OK; }
 int clearok(WINDOW *w, int b) { w->clear = b; return OK; }
@@ -312,6 +316,8 @@ static void map_refresh(WINDOW *w)
     else be_cursor(-1, 0, 0);
 }
 
+static int nhist;            /* history rows in use; the live message goes below them */
+
 /* a repeat of the newest history line becomes "line (xN)" in its row */
 static void hist(const char *s)
 {
@@ -325,11 +331,16 @@ static void hist(const char *s)
         reps = 1;
         snprintf(prev, sizeof prev, "%s", s);
         snprintf(buf, sizeof buf, "%s", s);
-        for (y = 0; y < HIST - 1; y++)
-            for (x = 0; x < p->maxx; x++) pset(p, y, x, p->c[(y + 1) * p->maxx + x]);
+        if (nhist < HIST)           /* not full yet: push the live rows down */
+            for (y = nhist + 3; y >= nhist; y--)
+                for (x = 0; x < p->maxx; x++) pset(p, y + 1, x, p->c[y * p->maxx + x]);
+        else
+            for (y = 0; y < HIST - 1; y++)
+                for (x = 0; x < p->maxx; x++) pset(p, y, x, p->c[(y + 1) * p->maxx + x]);
+        if (nhist < HIST) nhist++;
     }
     n = strlen(buf);
-    for (x = 0; x < p->maxx; x++) pset(p, HIST - 1, x, x < n ? (unsigned char)buf[x] : ' ');
+    for (x = 0; x < p->maxx; x++) pset(p, nhist - 1, x, x < n ? (unsigned char)buf[x] : ' ');
 }
 
 static void msg_refresh(WINDOW *w)
@@ -349,10 +360,10 @@ static void msg_refresh(WINDOW *w)
             chtype ch = w->c[y * w->maxx + x];
             int sy = y + w->begy, sx = x + w->begx;
             if (y && wc_mapwin && ch == wc_mapwin->c[sy * COLS + sx]) ch = ' ';
-            pset(pn[P_MSG], HIST + y, x, ch);
+            pset(pn[P_MSG], nhist + y, x, ch);
         }
     untouch(w);
-    be_cursor(P_MSG, HIST + w->cury, w->curx);
+    be_cursor(P_MSG, nhist + w->cury, w->curx);
 }
 
 static void pop_refresh(WINDOW *w)
@@ -380,6 +391,7 @@ static void pop_refresh(WINDOW *w)
         delwin(pn[P_POP]);
         pn[P_POP] = newwin(pop_h, pop_w, 0, 0);
     }
+    for (y = y0; y <= y1; y++) be_rowfg(P_POP, y - y0, w->fg[y] ? w->fg[y] : "");
     for (y = y0; y <= y1; y++)
         for (x = x0; x <= x1; x++) pset(pn[P_POP], y - y0, x - x0, w->c[y * w->maxx + x]);
     if (w->cury >= y0 && w->cury <= y1 && w->curx >= x0 && w->curx <= x1)
@@ -436,7 +448,7 @@ int wc_kbhit(void)
     return pushback >= 0;
 }
 
-int flushinp(void) { pushback = -1; while (be_getkey(0) >= 0) ; return OK; }
+int flushinp(void) { pushback = -1; while (be_getkey(-1) >= 0) ; return OK; }
 
 const char *unctrl(chtype c)
 {

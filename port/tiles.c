@@ -35,12 +35,23 @@ static int obj_tile(struct object *o)
     return -1;
 }
 
+int wc_obj_tile(struct object *o)
+{
+    int t = obj_tile(o);
+    return t >= 0 ? t : o->o_type < 128 ? generic_tile[o->o_type] : -1;
+}
+
 static int by_letter(int ch)
 {
     int i;
     for (i = 1; i <= NUMMONST; i++)
         if (monsters[i].m_appear == ch) return mon_tile[i];
     return -1;
+}
+
+int wc_mon_tile(struct thing *tp)
+{
+    return tp->t_index >= 0 && tp->t_index <= NUMMONST ? mon_tile[tp->t_index] : by_letter(tp->t_type);
 }
 
 /* Neighbours come from the real map (stdscr), so a monster or the player
@@ -53,6 +64,9 @@ static int real(int y, int x)
 #define HWALLISH(c) ((c) == HORZWALL || (c) == DOOR || (c) == SECRETDOOR)
 #define VWALLISH(c) ((c) == VERTWALL || (c) == DOOR || (c) == SECRETDOOR)
 
+enum { K_NONE, K_ROOM, K_CORR, K_DOOR };
+static int autotile(int y, int x, int k);
+
 static int terrain(int y, int x, int ch)
 {
     switch (ch) {
@@ -64,19 +78,58 @@ static int terrain(int y, int x, int ch)
             return HWALLISH(real(y, x + 1)) ? T_BL : T_BR;
         return T_HWALL;
     case VERTWALL: return T_VWALL;
-    case DOOR: return T_FLOOR;   /* Rogue doors are just gaps in the wall */
+    case DOOR: return autotile(y, x, K_DOOR);   /* Rogue doors are just gaps in the wall */
+    case FLOOR: return autotile(y, x, levtype == MAZELEV ? K_CORR : K_ROOM);
+    case PASSAGE: return autotile(y, x, K_CORR);
     }
     return ch < 128 ? terrain_tile[ch] : -1;
+}
+
+/* An item, trap or stairs covers the terrain on stdscr: outside every room
+   it lies in a corridor (items can be dropped there). */
+static int under_kind(int y, int x)
+{
+    coord c;
+    if (levtype == MAZELEV) return K_CORR;
+    c.y = y; c.x = x;
+    return roomin(&c) ? K_ROOM : K_CORR;
+}
+
+/* Floor kind of a cell on the real level (stdscr), not the player's view:
+   a border is part of the terrain and must not follow the lit area. */
+static int kind(int y, int x)
+{
+    int c = real(y, x);
+    if (c == ' ' || c == HORZWALL || c == VERTWALL || c == SECRETDOOR || c == FOREST || c == POOL)
+        return K_NONE;
+    if (c == DOOR) return K_DOOR;
+    if (c == PASSAGE) return K_CORR;
+    if (c == FLOOR) return levtype == MAZELEV ? K_CORR : K_ROOM;
+    return under_kind(y, x);
+}
+
+/* DawnLike autotile (RVIP-Finetuning): a border on each side whose
+   neighbour is not the same floor; doors join rooms and corridors. */
+static int autotile(int y, int x, int k)
+{
+    int m = 0, i, n;
+    static const int dy[] = { -1, 1, 0, 0 }, dx[] = { 0, 0, -1, 1 };
+    for (i = 0; i < 4; i++) {
+        n = kind(y + dy[i], x + dx[i]);
+        if (n == K_NONE || (n != k && n != K_DOOR && k != K_DOOR)) m |= 8 >> i;
+    }
+    return (k == K_CORR ? T_CORRS : T_FLOORS) + m;
 }
 
 /* The floor under a monster or item: what the real map (stdscr) has. */
 static int floor_under(int y, int x)
 {
     int c = stdscr->c[y * stdscr->maxx + x] & A_CHARTEXT;
-    if (c == PASSAGE) return T_CORR;
-    if (c == DOOR) return T_FLOOR;
-    if (c < 128 && terrain_tile[c] >= 0 && c != SECRETDOOR) return terrain_tile[c];
-    return levtype == MAZELEV || c == ' ' ? T_CORR : T_FLOOR;
+    if (c == PASSAGE) return autotile(y, x, K_CORR);
+    if (c == DOOR) return autotile(y, x, K_DOOR);
+    if (c == FLOOR) return autotile(y, x, levtype == MAZELEV ? K_CORR : K_ROOM);
+    if (c < 128 && terrain_tile[c] >= 0 && c != SECRETDOOR) return terrain_tile[c];  /* stairs, traps, trees, pools */
+    return autotile(y, x, c == ' ' ? K_CORR : under_kind(y, x));
 }
 
 int tile_for_(int y, int x, int ch, int *under);
@@ -169,15 +222,16 @@ void wc_inv(WINDOW *p)
 {
     char save[LINELEN * 2];
     struct linked_list *l;
-    int y = 0, ch = 'a';
+    int y = 0, ch = 'a', ic = be_icons();
 
     memcpy(save, prbuf, sizeof save);
     for (l = pack; l && y < p->maxy - 1; l = next(l), y++, ch = ch == 'z' ? 'A' : ch + 1) {
-        mvwprintw(p, y, 0, "%c) %s", ch, inv_name(OBJPTR(l), FALSE));
+        if (ic) mvwprintw(p, y, 0, "%c)   %s", ch, inv_name(OBJPTR(l), FALSE));  /* cols 2-4: icon */
+        else mvwprintw(p, y, 0, "%c) %c %s", ch, (OBJPTR(l))->o_type, inv_name(OBJPTR(l), FALSE));
         wclrtoeol(p);
-        be_invfg(y, wc_kind((OBJPTR(l))->o_type)->css);
+        be_invfg(y, wc_kind((OBJPTR(l))->o_type)->css, ic ? wc_obj_tile(OBJPTR(l)) : -1);
     }
-    for (; y < p->maxy; y++) { be_invfg(y, ""); if (y < p->maxy - 1) { wmove(p, y, 0); wclrtoeol(p); } }
+    for (; y < p->maxy; y++) { be_invfg(y, "", -1); if (y < p->maxy - 1) { wmove(p, y, 0); wclrtoeol(p); } }
     mvwprintw(p, y, 0, "%d/%d items, %ld gold", inpack, MAXPACK, purse);
     wclrtoeol(p);
     memcpy(prbuf, save, sizeof save);
