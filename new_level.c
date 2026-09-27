@@ -436,7 +436,7 @@ LEVTYPE	ltype;		/* designates type of level to create */
     status(TRUE);
 
     /* Do we sense any food on this level? */
-    if (cur_relic[SURTUR_RING]) quaff(P_FFIND, NULL, NULL, FALSE);
+    if (cur_relic[SURTUR_RING]) quaff(P_FFIND, 0, 0, FALSE);
 }
 
 /*

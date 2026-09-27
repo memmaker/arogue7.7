@@ -95,7 +95,7 @@ do_maze()
 	/*
 	 * add some gold to make it worth looking for 
 	 */
-	item = spec_item(GOLD, NULL, NULL, NULL);
+	item = spec_item(GOLD, 0, 0, 0);
 	obj = OBJPTR(item);
 	obj->o_count *= (rnd(5) + 5);		/* add in one large hunk */
 	attach(lvl_obj, item);
@@ -108,7 +108,7 @@ do_maze()
 	/*
 	 * add in some food to make sure he has enough
 	 */
-	item = spec_item(FOOD, NULL, NULL, NULL);
+	item = spec_item(FOOD, 0, 0, 0);
 	obj = OBJPTR(item);
 	attach(lvl_obj, item);
 	do {

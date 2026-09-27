@@ -498,7 +498,7 @@ int flags;
 		if (pstats.s_hpt <= 0) {
 		    msg("Your life has been sucked from you -- More --");
 		    wait_for(' ');
-		    death(zapper);
+		    death(zapper->t_index);
 		}
 		else
 		    msg("You feel a great drain on your system");

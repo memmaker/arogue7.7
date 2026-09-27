@@ -276,8 +276,8 @@ command()
 			    after = FALSE;
 			}
 		    when C_COUNT : count_gold();
-		    when C_QUAFF : quaff(-1, NULL, NULL, TRUE);
-		    when C_READ : read_scroll(-1, NULL, TRUE);
+		    when C_QUAFF : quaff(-1, 0, 0, TRUE);
+		    when C_READ : read_scroll(-1, 0, TRUE);
 		    when C_EAT : eat();
 		    when C_WIELD : wield();
 		    when C_WEAR : wear();

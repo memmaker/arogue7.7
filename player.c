@@ -351,7 +351,7 @@ gsense()
 	return;
     }
 
-    read_scroll(S_GFIND, NULL, FALSE);
+    read_scroll(S_GFIND, 0, FALSE);
 }
 
 /* 
@@ -754,7 +754,7 @@ char		*type;		/* type of thing--> spell, prayer, chant */
 #endif
 	/* Should we overlay? */
 	if (menu_overlay && num_spells + 3 < lines / 2) {
-	    over_win(cw, hw, num_spells + 5, maxlen + 3, 0, curlen, NULL);
+	    over_win(cw, hw, num_spells + 5, maxlen + 3, 0, curlen, 0);
 	}
 	else draw(hw);
     }
@@ -780,7 +780,7 @@ char		*type;		/* type of thing--> spell, prayer, chant */
 	    /* Should we overlay? */
 	    if (menu_overlay && num_spells + 3 < lines / 2) {
 		over_win(cw, hw, num_spells + 5, maxlen + 3,
-			    0, curlen, NULL);
+			    0, curlen, 0);
 	    }
 	    else draw(hw);
 

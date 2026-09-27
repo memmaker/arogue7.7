@@ -765,7 +765,7 @@ struct object *obj;
 #endif
 	/* Should we overlay? */
 	if (menu_overlay && MAXQUILL + 3 < lines / 2) {
-	    over_win(cw, hw, MAXQUILL + 5, maxlen + 3, 0, curlen, NULL);
+	    over_win(cw, hw, MAXQUILL + 5, maxlen + 3, 0, curlen, 0);
 	}
 	else draw(hw);
     }
@@ -794,7 +794,7 @@ struct object *obj;
 	    /* Should we overlay? */
 	    if (menu_overlay && MAXQUILL + 3 < lines / 2) {
 		over_win(cw, hw, MAXQUILL + 5, maxlen + 3,
-			    0, curlen, NULL);
+			    0, curlen, 0);
 	    }
 	    else draw(hw);
 
@@ -937,7 +937,7 @@ int which;
 		msg("The jug is empty");
 		break;
 	    }
-	    quaff (obj->o_ac, NULL, NULL, FALSE);
+	    quaff (obj->o_ac, 0, 0, FALSE);
 	    obj->o_ac = JUG_EMPTY;
 	    fuse (alchemy, obj, ALCHEMYTIME, AFTER);
 	    if (!(obj->o_flags & ISKNOW))

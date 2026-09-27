@@ -789,7 +789,7 @@ bool askfirst, showcost;
 #endif
 	    /* Write the screen */
 	    if ((menu_overlay && cnt < lines / 2 + 2) || cnt == 1) {
-		over_win(cw, hw, cnt + 2, maxx + 3, cnt, curx, NULL);
+		over_win(cw, hw, cnt + 2, maxx + 3, cnt, curx, 0);
 		cnt = -1;	/* Indicate we used over_win */
 	    }
 	    else draw(hw);
@@ -1107,75 +1107,75 @@ int chance;
      */
     if (on(*mp, ISUNIQUE)) {
 	if (on(*mp, CARRYMDAGGER)) {
-	    item = spec_item(RELIC, MUSTY_DAGGER, NULL, NULL);
+	    item = spec_item(RELIC, MUSTY_DAGGER, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYCLOAK)) {
-	    item = spec_item(RELIC, EMORI_CLOAK, NULL, NULL);
+	    item = spec_item(RELIC, EMORI_CLOAK, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYANKH)) {
-	    item = spec_item(RELIC, HEIL_ANKH, NULL, NULL);
+	    item = spec_item(RELIC, HEIL_ANKH, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYSTAFF)) {
-	    item = spec_item(RELIC, MING_STAFF, NULL, NULL);
+	    item = spec_item(RELIC, MING_STAFF, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYWAND)) {
-	    item = spec_item(RELIC, ORCUS_WAND, NULL, NULL);
+	    item = spec_item(RELIC, ORCUS_WAND, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYROD)) {
-	    item = spec_item(RELIC, ASMO_ROD, NULL, NULL);
+	    item = spec_item(RELIC, ASMO_ROD, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYYAMULET)) {
-	    item = spec_item(RELIC, YENDOR_AMULET, NULL, NULL);
+	    item = spec_item(RELIC, YENDOR_AMULET, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYBAMULET)) {
-	    item = spec_item(RELIC, STONEBONES_AMULET, NULL, NULL);
+	    item = spec_item(RELIC, STONEBONES_AMULET, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 
 	if (on(*mp, CARRYMANDOLIN)) {
-	    item = spec_item(RELIC, BRIAN_MANDOLIN, NULL, NULL);
+	    item = spec_item(RELIC, BRIAN_MANDOLIN, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 	if (on(*mp, CARRYEYE)) {
-	    item = spec_item(RELIC, EYE_VECNA, NULL, NULL);
+	    item = spec_item(RELIC, EYE_VECNA, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 	if (on(*mp, CARRYAXE)) {
-	    item = spec_item(RELIC, AXE_AKLAD, NULL, NULL);
+	    item = spec_item(RELIC, AXE_AKLAD, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
@@ -1183,7 +1183,7 @@ int chance;
 	if (on(*mp, CARRYQUILL)) {
 	    register int i, howmany;
 
-	    item = spec_item(RELIC, QUILL_NAGROM, NULL, NULL);
+	    item = spec_item(RELIC, QUILL_NAGROM, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    obj->o_charges = rnd(QUILLCHARGES);
@@ -1200,25 +1200,25 @@ int chance;
 	    }
 	}
 	if (on(*mp, CARRYMSTAR)) {
-	    item = spec_item(RELIC, HRUGGEK_MSTAR, NULL, NULL);
+	    item = spec_item(RELIC, HRUGGEK_MSTAR, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 	if (on(*mp, CARRYFLAIL)) {
-	    item = spec_item(RELIC, YEENOGHU_FLAIL, NULL, NULL);
+	    item = spec_item(RELIC, YEENOGHU_FLAIL, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 	if (on(*mp, CARRYHORN)) {
-	    item = spec_item(RELIC, GERYON_HORN, NULL, NULL);
+	    item = spec_item(RELIC, GERYON_HORN, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
 	}
 	if (on(*mp, CARRYSURTURRING)) {
-	    item = spec_item(RELIC, SURTUR_RING, NULL, NULL);
+	    item = spec_item(RELIC, SURTUR_RING, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_pos = mp->t_pos;
 	    attach(mp->t_pack, item);
@@ -1228,7 +1228,7 @@ int chance;
      * If it carries gold, give it some
      */
     if (on(*mp, CARRYGOLD) && rnd(100) < chance) {
-	    item = spec_item(GOLD, NULL, NULL, NULL);
+	    item = spec_item(GOLD, 0, 0, 0);
 	    obj = OBJPTR(item);
 	    obj->o_count = GOLDCALC + GOLDCALC;
 	    obj->o_pos = mp->t_pos;
@@ -1239,7 +1239,7 @@ int chance;
      * If it carries food, give it some
      */
     if (on(*mp, CARRYFOOD) && rnd(100) < chance) {
-	item = spec_item(FOOD, NULL, NULL, NULL);
+	item = spec_item(FOOD, 0, 0, 0);
 	obj = OBJPTR(item);
 	obj->o_weight = things[TYP_FOOD].mi_wght;
 	obj->o_pos = mp->t_pos;
@@ -1433,7 +1433,7 @@ register y, x;
 	 * to he right.
 	 */
 	if (menu_overlay && num_there < lines / 2 + 2) {
-	  over_win(cw, hw, num_there + 2, maxlen + 3, num_there, curlen, NULL);
+	  over_win(cw, hw, num_there + 2, maxlen + 3, num_there, curlen, 0);
 	  pagecnt = -1;	/* Indicate we used over_win */
 	}
 	else draw(hw);		/* write screen */
@@ -1481,7 +1481,7 @@ register y, x;
 		 */
 		if (menu_overlay && num_there < lines / 2 + 2) {
 		    over_win(cw, hw, num_there + 2, maxlen + 3,
-				num_there, 49, NULL);
+				num_there, 49, 0);
 		    cnt = -1;	/* Indicate we used over_win */
 		}
 		else draw(hw);		/* write screen */
