@@ -30,11 +30,11 @@
 */
 
 #if defined(_WIN32)
-#include <Windows.h>
-#include <Lmcons.h>
+#include <windows.h>
+#include <lmcons.h>
 #include <process.h>
 #include <shlobj.h>
-#include <Shlwapi.h>
+#include <shlwapi.h>
 #include <sys/types.h>
 #undef MOUSE_MOVED
 #elif defined(__DJGPP__)

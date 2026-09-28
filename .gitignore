@@ -7,3 +7,5 @@ web/dist/
 *.o
 save/
 __pycache__/
+arogue77-term
+arogue77-term.exe
